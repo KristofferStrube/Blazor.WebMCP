@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="samples/KristofferStrube.Blazor.WebMCP.WasmExample/KristofferStrube.Blazor.WebMCP.WasmExample.csproj" />
+  <Project Path="src/KristofferStrube.Blazor.WebMCP/KristofferStrube.Blazor.WebMCP.csproj" />
+</Solution>

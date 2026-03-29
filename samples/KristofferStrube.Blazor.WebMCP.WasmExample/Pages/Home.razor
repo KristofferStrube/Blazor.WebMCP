@@ -1,0 +1,59 @@
+﻿@page "/"
+@using KristofferStrube.Blazor.DOM
+@implements IAsyncDisposable
+@inject IModelContextService ModelContextService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor WebMCP</PageTitle>
+
+<h1>Blazor WebMCP</h1>
+
+<p>
+    On this page, we have a single tool that can write some content to the page.
+    If you have an extension like <a href="https://chromewebstore.google.com/detail/webmcp-model-context-tool/gbpdfapgefenggkahomfgkhfehlcenpd">WebMCP - Model Context Tool Inspector</a>
+    then you can ask the agent to use this tool by stating something like:
+</p>
+<p><u>"Write WebMCP is cool on this page!"</u></p>
+
+<code style="font-size:large;">@contentFromAI</code>
+
+@code {
+    string contentFromAI = "";
+    AbortController? toolUnregisterController;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        ModelContextTool<ToolArguments, string> tool = new()
+        {
+            Name = "WriteContent",
+            Description = "This tool can write some content to the website.",
+            Execute = async (ToolArguments input, ModelContextClient? client) =>
+            {
+                contentFromAI = input.Message;
+                await InvokeAsync(StateHasChanged);
+                return "Content was written to the website.";
+            }
+        };
+
+        toolUnregisterController = await AbortController.CreateAsync(JSRuntime);
+        await using AbortSignal toolUnregisterSignal = await toolUnregisterController.GetSignalAsync();
+
+        await ModelContextService.RegisterToolAsync(tool, new ModelContextRegisterToolOptions()
+        {
+            Signal = toolUnregisterSignal
+        });
+    }
+
+    public record ToolArguments(string Message);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (toolUnregisterController is not null)
+        {
+            await toolUnregisterController.AbortAsync();
+            await toolUnregisterController.DisposeAsync();
+        }
+    }
+}

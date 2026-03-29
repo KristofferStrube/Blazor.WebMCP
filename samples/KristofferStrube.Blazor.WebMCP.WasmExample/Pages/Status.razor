@@ -1,0 +1,104 @@
+﻿@page "/Status"
+@using DiffPlex
+@using DiffPlex.DiffBuilder
+@using DiffPlex.DiffBuilder.Model
+@using HtmlAgilityPack;
+
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+<PageTitle>WebMCP - Status</PageTitle>
+
+@if (compareText is not null)
+{
+    <pre><code>
+                    @((MarkupString)compareText)
+                    </code></pre>
+}
+else
+{
+    <text>Loading WebIDL from specs ...</text>
+    <br />
+    <small>This make take a while as it is fetching the current specification live.</small>
+}
+
+@code {
+    private string? compareText;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string domString = await HttpClient.GetStringAsync("https://webmachinelearning.github.io/webmcp/");
+
+            var dom = new HtmlDocument();
+            dom.LoadHtml(domString);
+
+            var fetchedWedIdl = dom.DocumentNode.Descendants()
+                .Last(node => node.HasClass("highlight")).InnerText
+                .Replace("\n  ", "\n    ")
+                .Replace("<", "&lt;")
+                .Replace(">", "&gt;");
+
+            var supportedWedIdl = currentlySupportedWebIDL.Replace("<", "&lt;").Replace(">", "&gt;");
+            var compareLines = new List<string>();
+
+            var diffBuilder = new InlineDiffBuilder(new Differ());
+            var diffResult = diffBuilder.BuildDiffModel(fetchedWedIdl, supportedWedIdl);
+
+            Console.WriteLine(fetchedWedIdl);
+            Console.WriteLine(supportedWedIdl);
+
+            foreach (var line in diffResult.Lines)
+            {
+                string color = line.Type switch
+                {
+                    ChangeType.Unchanged => "lightgreen",
+                    ChangeType.Deleted => "pink",
+                    ChangeType.Inserted => "lemonchiffon",
+                    _ => "pink"
+                };
+                compareLines.Add($"""<span style="background-color:{color};display:block;min-height:21px;">{line.Text}</span>""");
+            }
+            compareText = string.Join("", compareLines);
+            StateHasChanged();
+        }
+    }
+
+    private const string currentlySupportedWebIDL = @"partial interface Navigator {
+    [SecureContext, SameObject] readonly attribute ModelContext modelContext;
+};
+
+[Exposed=Window, SecureContext]
+interface ModelContext {
+    undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
+};
+
+dictionary ModelContextTool {
+    required DOMString name;
+    required DOMString description;
+    object inputSchema;
+    required ToolExecuteCallback execute;
+    ToolAnnotations annotations;
+};
+
+dictionary ToolAnnotations {
+    boolean readOnlyHint = false;
+};
+
+callback ToolExecuteCallback = Promise<any> (object input, ModelContextClient client);
+
+dictionary ModelContextRegisterToolOptions {
+    AbortSignal signal;
+};
+
+[Exposed=Window, SecureContext]
+interface ModelContextClient {
+    Promise<any> requestUserInteraction(UserInteractionCallback callback);
+};
+
+callback UserInteractionCallback = Promise<any> ();
+
+";
+
+}

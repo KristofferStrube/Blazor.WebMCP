@@ -1,0 +1,61 @@
+﻿@page "/counter"
+@using KristofferStrube.Blazor.DOM
+@implements IAsyncDisposable
+@inject IModelContextService ModelContextService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor WebMCP - Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p>On this page, we have a single tool that can be used to increment the counter instead of you doing it yourself.</p>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me <u>(or use the tool instead)</u></button>
+
+@code {
+    private int currentCount = 0;
+    AbortController? toolUnregisterController;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        ModelContextTool<ToolArguments, string> tool = new()
+        {
+            Name = "Counter",
+            Description = "Can add some count to the counter shown on the page.",
+            Execute = async (ToolArguments input, ModelContextClient? client) =>
+            {
+                currentCount += input.AddedCount;
+                await InvokeAsync(StateHasChanged);
+                return $"Added {input.AddedCount} to the counter. Now it is {currentCount}.";
+            }
+        };
+
+        toolUnregisterController = await AbortController.CreateAsync(JSRuntime);
+        await using AbortSignal toolUnregisterSignal = await toolUnregisterController.GetSignalAsync();
+
+        await ModelContextService.RegisterToolAsync(tool, new ModelContextRegisterToolOptions()
+        {
+            Signal = toolUnregisterSignal
+        });
+    }
+
+    public record ToolArguments(int AddedCount);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (toolUnregisterController is not null)
+        {
+            await toolUnregisterController.AbortAsync();
+            await toolUnregisterController.DisposeAsync();
+        }
+    }
+}
