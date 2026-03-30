@@ -14,7 +14,7 @@ jobs:
       contents: write
     steps:
         # Checkout the code
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v3
 
         # Install .NET 10.0 SDK
         - name: Setup .NET 10 preview
