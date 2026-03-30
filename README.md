@@ -2,7 +2,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/KristofferStrube/Blazor.WebMCP)](https://github.com/KristofferStrube/Blazor.WebMCP/issues)
 [![GitHub forks](https://img.shields.io/github/forks/KristofferStrube/Blazor.WebMCP)](https://github.com/KristofferStrube/Blazor.WebMCP/network/members)
 [![GitHub stars](https://img.shields.io/github/stars/KristofferStrube/Blazor.WebMCP)](https://github.com/KristofferStrube/Blazor.WebMCP/stargazers)
-<!-- [![NuGet Downloads (official NuGet)](https://img.shields.io/nuget/dt/KristofferStrube.Blazor.WebMCP?label=NuGet%20Downloads)](https://www.nuget.org/packages/KristofferStrube.Blazor.WebMCP/)-->
+[![NuGet Downloads (official NuGet)](https://img.shields.io/nuget/dt/KristofferStrube.Blazor.WebMCP?label=NuGet%20Downloads)](https://www.nuget.org/packages/KristofferStrube.Blazor.WebMCP/)
 
 # Blazor.WebMCP
 A Blazor wrapper for the [WebMCP browser API.](https://github.com/webmachinelearning/webmcp)
@@ -18,8 +18,18 @@ On each page, you can find the corresponding code for the example in the top rig
 On the [API Coverage Status](https://kristofferstrube.github.io/Blazor.WebMCP/Status) page, you can see how much of the WebIDL specs this wrapper has covered.
 
 # Getting started
-**I don't have a NuGet package out for the library yet, but it is planned. Once it is out you can follow this small guide to add your own tools to your Blazor App.**
+## Prerequisites
+You need to install .NET 7.0 or newer to use the library.
 
+[Download .NET 7](https://dotnet.microsoft.com/download/dotnet/10.0)
+
+## Installation
+You can install the package via NuGet with the Package Manager in your IDE or alternatively using the command line:
+```bash
+dotnet add package KristofferStrube.Blazor.WebMCP
+```
+
+## Usage
 Using the library you can add your own WebMCP tools to your web page. First you need to register a service in your service collection using the following extension:
 ```csharp
 builder.Services.AddModelContextService();
