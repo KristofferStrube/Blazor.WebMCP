@@ -14,8 +14,11 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me <u>(or use the tool instead)</u></button>
 
+<SupportNotice SupportStatus="browserSupport" />
+
 @code {
     private int currentCount = 0;
+    SupportStatus browserSupport;
     AbortController? toolUnregisterController;
 
     private void IncrementCount()
@@ -26,6 +29,14 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+
+        browserSupport = await ModelContextService.CheckForSupportStatusAsync();
+
+        if (browserSupport is SupportStatus.None)
+        {
+            return;
+        }
+        StateHasChanged();
 
         ModelContextTool<ToolArguments, string> tool = new()
         {

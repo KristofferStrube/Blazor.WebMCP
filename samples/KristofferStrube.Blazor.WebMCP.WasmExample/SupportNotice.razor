@@ -1,0 +1,20 @@
+﻿@if (SupportStatus is SupportStatus.None)
+{
+    <p style="color:red;">
+        Your browser does not support the WebMCP API.
+        The API is currently only supported in the newest versions of Google Chrome like the ones you can get through Google Chrome Canary.
+        Once you have one of the newest builds of Chrome you need to explicitly activate the api by enabling the feature: <u>chrome://flags/#enable-webmcp-testing</u>
+    </p>
+}
+else if (SupportStatus is SupportStatus.OldVersion)
+{
+    <p style="color:red;">
+        You have a version of Google Chrome installed that does not implement the newest version of the specification.
+        Try out Google Chrome Canary to get a newer version.
+    </p>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public SupportStatus SupportStatus { get; set; }
+}

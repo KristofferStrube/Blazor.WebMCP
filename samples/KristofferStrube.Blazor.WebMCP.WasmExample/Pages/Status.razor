@@ -46,9 +46,6 @@ else
             var diffBuilder = new InlineDiffBuilder(new Differ());
             var diffResult = diffBuilder.BuildDiffModel(fetchedWedIdl, supportedWedIdl);
 
-            Console.WriteLine(fetchedWedIdl);
-            Console.WriteLine(supportedWedIdl);
-
             foreach (var line in diffResult.Lines)
             {
                 string color = line.Type switch

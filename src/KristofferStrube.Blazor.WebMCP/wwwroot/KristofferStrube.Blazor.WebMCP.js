@@ -18,11 +18,7 @@ export async function requestUserInteraction(modelContextClient, callback) {
 }
 
 export function hasModelContext() {
-    return navigator.modelContext == undefined;
-}
-
-export function hasRegisterToolFunction() {
-    return navigator.modelContext.registerTool != undefined;
+    return navigator.modelContext != undefined;
 }
 
 export function hasUnregisterToolFunction() {

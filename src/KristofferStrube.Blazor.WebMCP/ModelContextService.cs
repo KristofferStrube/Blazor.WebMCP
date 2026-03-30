@@ -37,4 +37,25 @@ public class ModelContextService : IModelContextService
             annotations = tool.Annotations,
         }, options);
     }
+
+    /// <inheritdoc/>
+    public async Task<SupportStatus> CheckForSupportStatusAsync()
+    {
+        IJSObjectReference helper = await helperTask.Value;
+
+        bool hasModelContext = await helper.InvokeAsync<bool>("hasModelContext");
+        if (!hasModelContext)
+        {
+            return SupportStatus.None;
+        }
+
+        bool hasUnregisterToolFunction = await helper.InvokeAsync<bool>("hasUnregisterToolFunction");
+
+        if (hasUnregisterToolFunction)
+        {
+            return SupportStatus.OldVersion;
+        }
+
+        return SupportStatus.Supported;
+    }
 }

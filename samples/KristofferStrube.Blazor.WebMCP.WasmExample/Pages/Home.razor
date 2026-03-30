@@ -10,20 +10,31 @@
 
 <p>
     On this page, we have a single tool that can write some content to the page.
-    If you have an extension like <a href="https://chromewebstore.google.com/detail/webmcp-model-context-tool/gbpdfapgefenggkahomfgkhfehlcenpd">WebMCP - Model Context Tool Inspector</a>
+    If you have an extension like <a target="_blank" href="https://chromewebstore.google.com/detail/webmcp-model-context-tool/gbpdfapgefenggkahomfgkhfehlcenpd">WebMCP - Model Context Tool Inspector</a>
     then you can ask the agent to use this tool by stating something like:
 </p>
-<p><u>"Write WebMCP is cool on this page!"</u></p>
+<p><i>Write WebMCP is cool on this page!</i></p>
 
 <code style="font-size:large;">@contentFromAI</code>
 
+<SupportNotice SupportStatus="browserSupport" />
+
 @code {
     string contentFromAI = "";
+    SupportStatus browserSupport;
     AbortController? toolUnregisterController;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+
+        browserSupport = await ModelContextService.CheckForSupportStatusAsync();
+
+        if (browserSupport is SupportStatus.None)
+        {
+            return;
+        }
+        StateHasChanged();
 
         ModelContextTool<ToolArguments, string> tool = new()
         {

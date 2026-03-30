@@ -12,4 +12,9 @@ public interface IModelContextService
     /// <param name="tool">The tool to register.</param>
     /// <param name="options">Options for how the tool is registered.</param>
     public Task RegisterToolAsync<TInput, TOutput>(ModelContextTool<TInput, TOutput> tool, ModelContextRegisterToolOptions? options = null);
+    
+    /// <summary>
+    /// Checks whether the current browser supports the WebMCP API.
+    /// </summary>
+    public Task<SupportStatus> CheckForSupportStatusAsync();
 }
