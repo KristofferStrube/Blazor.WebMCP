@@ -42,6 +42,12 @@ public class ModelContextClient : IJSCreatable<ModelContextClient>
         helperTask = new(jSRuntime.GetHelperAsync);
     }
 
+    /// <summary>
+    /// Asynchronously requests user input during the execution of a tool.
+    /// The callback function is invoked to perform the user interaction(e.g., showing a confirmation dialog), and the promise resolves with the result of the callback.
+    /// </summary>
+    /// <typeparam name="T">The response type of the user interaction</typeparam>
+    /// <param name="callback">A callback that works as an alternative to awaiting the method, though that is recommended.</param>
     public async Task<T> RequestUserInteractionAsync<T>(Func<Task<T>> callback)
     {
         using Callback<T> callbackWrapper = new(callback);
