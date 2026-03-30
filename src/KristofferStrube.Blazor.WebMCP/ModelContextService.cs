@@ -6,7 +6,7 @@ using System.Text.Json.Schema;
 namespace KristofferStrube.Blazor.WebMCP;
 
 /// <inheritdoc cref="IModelContextService"/>
-public class ModelContextService : IModelContextService
+public class ModelContextService : IModelContextService, IAsyncDisposable
 {
     private readonly IJSRuntime jSRuntime;
     private readonly Lazy<Task<IJSObjectReference>> helperTask;
@@ -57,5 +57,15 @@ public class ModelContextService : IModelContextService
         }
 
         return SupportStatus.Supported;
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask DisposeAsync()
+    {
+        if (helperTask.IsValueCreated)
+        {
+            IJSObjectReference helper = await helperTask.Value;
+            await helper.DisposeAsync();
+        }
     }
 }

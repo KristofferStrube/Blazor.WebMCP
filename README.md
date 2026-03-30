@@ -17,6 +17,72 @@ On each page, you can find the corresponding code for the example in the top rig
 
 On the [API Coverage Status](https://kristofferstrube.github.io/Blazor.WebMCP/Status) page, you can see how much of the WebIDL specs this wrapper has covered.
 
+# Getting started
+**I don't have a NuGet package out for the library yet, but it is planned. Once it is out you can follow this small guide to add your own tools to your Blazor App.**
+
+Using the library you can add your own WebMCP tools to your web page. First you need to register a service in your service collection using the following extension:
+```csharp
+builder.Services.AddModelContextService();
+```
+
+Then in some page you can inject the `IModelContextService` to register your own tool.
+
+```razor
+@using KristofferStrube.Blazor.DOM
+@using KristofferStrube.Blazor.WebMCP
+@implements IAsyncDisposable
+@inject IModelContextService ModelContextService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Blazor WebMCP</PageTitle>
+
+<h1>@contentFromAI</h1>
+
+@code {
+    string contentFromAI = "";
+    SupportStatus browserSupport;
+    AbortController? toolUnregisterController;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        ModelContextTool<ToolArguments, string> tool = new()
+        {
+            Name = "WriteContent",
+            Description = "This tool can write some content to the website.",
+            Execute = async (ToolArguments input, ModelContextClient? client) =>
+            {
+                contentFromAI = input.Message;
+                await InvokeAsync(StateHasChanged);
+                return "Content was written to the website.";
+            }
+        };
+
+        toolUnregisterController = await AbortController.CreateAsync(JSRuntime);
+        await using AbortSignal toolUnregisterSignal = await toolUnregisterController.GetSignalAsync();
+
+        await ModelContextService.RegisterToolAsync(tool, new ModelContextRegisterToolOptions()
+        {
+            Signal = toolUnregisterSignal
+        });
+    }
+
+    public record ToolArguments(string Message);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (toolUnregisterController is not null)
+        {
+            await toolUnregisterController.AbortAsync();
+            await toolUnregisterController.DisposeAsync();
+        }
+    }
+}
+```
+
+In the above example we also unregister our tool once the user navigated away from the specific page by implementing `AsyncDisposable`. This is especially important in Blazor WASM where navigation does not reload the page.
+
 # Related repositories
 The library uses the following other packages to support its features:
 - https://github.com/KristofferStrube/Blazor.WebIDL (To make error handling JSInterop)
