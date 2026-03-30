@@ -19,9 +19,9 @@ On the [API Coverage Status](https://kristofferstrube.github.io/Blazor.WebMCP/St
 
 # Getting started
 ## Prerequisites
-You need to install .NET 7.0 or newer to use the library.
+You need to install .NET 10.0 or newer to use the library.
 
-[Download .NET 7](https://dotnet.microsoft.com/download/dotnet/10.0)
+[Download .NET 10](https://dotnet.microsoft.com/download/dotnet/10.0)
 
 ## Installation
 You can install the package via NuGet with the Package Manager in your IDE or alternatively using the command line:
