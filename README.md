@@ -5,7 +5,7 @@
 [![NuGet Downloads (official NuGet)](https://img.shields.io/nuget/dt/KristofferStrube.Blazor.WebMCP?label=NuGet%20Downloads)](https://www.nuget.org/packages/KristofferStrube.Blazor.WebMCP/)
 
 # Blazor.WebMCP
-A Blazor wrapper for the [WebMCP browser API.](https://github.com/webmachinelearning/webmcp)
+A Blazor wrapper for the [WebMCP browser API.](https://webmachinelearning.github.io/webmcp/)
 The Web API enables the browser to provide tools that can be accessed by AI agents and assistive technologies to create collaborative, human-in-the-loop workflows. This project implements a wrapper around the API for Blazor so that we can easily and safely expose our own tools in C# through the WebMCP API.
 
 **The browser API is not stable yet, so this project might break in the future if the API changes**
