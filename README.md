@@ -50,7 +50,6 @@ Then in some page you can inject the `IModelContextService` to register your own
 
 @code {
     string contentFromAI = "";
-    SupportStatus browserSupport;
     AbortController? toolUnregisterController;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
